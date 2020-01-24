@@ -1,0 +1,5 @@
+venv/
+.vscode/settings.json
+.vscode/launch.json
+geckodriver.log
+debug.log
