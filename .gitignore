@@ -3,3 +3,5 @@ venv/
 .vscode/launch.json
 geckodriver.log
 debug.log
+main.py
+output/
