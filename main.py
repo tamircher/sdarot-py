@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--sid', type=int, required=True)
-    parser.add_argument('-s', '--seasons', type=str, required=True)
+    parser.add_argument('-s', '--seasons', type=str, default='1')
     parser.add_argument('-e', '--episodes', type=str)
 
     args = parser.parse_args()
