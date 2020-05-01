@@ -18,6 +18,9 @@ class SdarotPy:
         self.season_range = season_range
         self.episode_range = episode_range
 
+        # get serie name from the webpage
+        self.serie_name = self.init_serie_name()
+
         self.url = 'https://sdarot.today/ajax/watch'
 
         headers = {
@@ -28,6 +31,17 @@ class SdarotPy:
         self.s = requests.Session()
         self.s.headers.update(headers)
 
+    def prepare_webpage_url(self):
+        return f'https://sdarot.today/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
+
+    def init_serie_name(self):
+
+        ### get seire name ###
+        res = requests.get(self.prepare_webpage_url())
+        tree = html.fromstring(res.content)
+        return tree.xpath(
+            '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
+
     def get_data(self, url, data={}):
 
         try:
@@ -36,7 +50,7 @@ class SdarotPy:
             print(e)
         return None
 
-    def get_video(self, video_url, serie_name):
+    def get_video(self, video_url):
 
         # get video with stream
         res = self.s.get(video_url, stream=True)
@@ -48,7 +62,7 @@ class SdarotPy:
         file_size = int(res.headers.get("Content-Length", 0))
 
         # create direcotory for episode
-        episode_path = join(self.output_path, f'{serie_name}',
+        episode_path = join(self.output_path, f'{self.serie_name}',
                             f'Season-{self.season}')
         os.makedirs(episode_path, exist_ok=True)
         # get the file name
@@ -141,7 +155,7 @@ class SdarotPy:
         video_url = f'https://{content["url"]}/w/episode/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
         print(f'Video URL: {video_url}')
 
-        ret = self.get_video(video_url, serie_name)
+        ret = self.get_video(video_url)
         if ret:
             print('Video downloaded successfully')
         else:
