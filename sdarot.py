@@ -3,6 +3,7 @@ import time
 import os
 from tqdm import tqdm
 from os.path import join
+from lxml import html
 
 
 class SdarotPy:
@@ -35,7 +36,7 @@ class SdarotPy:
             print(e)
         return None
 
-    def get_video(self, video_url):
+    def get_video(self, video_url, serie_name):
 
         # get video with stream
         res = self.s.get(video_url, stream=True)
@@ -47,7 +48,7 @@ class SdarotPy:
         file_size = int(res.headers.get("Content-Length", 0))
 
         # create direcotory for episode
-        episode_path = join(self.output_path, f'{self.sid}',
+        episode_path = join(self.output_path, f'{serie_name}',
                             f'Season-{self.season}')
         os.makedirs(episode_path, exist_ok=True)
         # get the file name
@@ -77,6 +78,12 @@ class SdarotPy:
         print(f'Status: {res.status_code}')
         if res.status_code == 301:
             return False
+
+        ### get seire name ###
+        res = requests.get(temp_url)
+        tree = html.fromstring(res.content)
+        serie_name = tree.xpath(
+            '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
 
         ### pre watch ###
 
@@ -134,7 +141,7 @@ class SdarotPy:
         video_url = f'https://{content["url"]}/w/episode/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
         print(f'Video URL: {video_url}')
 
-        ret = self.get_video(video_url)
+        ret = self.get_video(video_url, serie_name)
         if ret:
             print('Video downloaded successfully')
         else:

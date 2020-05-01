@@ -5,3 +5,4 @@ geckodriver.log
 debug.log
 main.py
 output/
+__pycache__/
