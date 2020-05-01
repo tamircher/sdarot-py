@@ -27,10 +27,10 @@ class SdarotPy:
         self.s = requests.Session()
         self.s.headers.update(headers)
 
-    def get_data(self, data):
+    def get_data(self, url, data={}):
 
         try:
-            return self.s.post(self.url, data=data)
+            return self.s.post(url, data=data)
         except Exception as e:
             print(e)
         return None
@@ -71,6 +71,13 @@ class SdarotPy:
 
     def download_episode(self):
 
+        ### check if ep exsits ###
+        temp_url = f'https://sdarot.today/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
+        res = requests.head(temp_url)
+        print(f'Status: {res.status_code}')
+        if res.status_code == 301:
+            return False
+
         ### pre watch ###
 
         data_prewatch = {
@@ -81,10 +88,10 @@ class SdarotPy:
         }
 
         print('Getting Token...')
-        res = self.get_data(data_prewatch)
+        res = self.get_data(self.url, data_prewatch)
         if not res or res.status_code != 200:
             print('Error occured, no token')
-            return
+            return True
 
         token = res.content.decode("utf-8")
         print(f'Token: {token}')
@@ -92,7 +99,7 @@ class SdarotPy:
         ### 30 seconds loading ###
 
         print('Sleep 30 seconds for loading...')
-        for i in tqdm(range(30)):
+        for _ in tqdm(range(30)):
             time.sleep(1)
 
         ### watch ##
@@ -107,17 +114,21 @@ class SdarotPy:
         }
 
         print('Getting Video URL...')
-        res = self.get_data(data_watch)
+        res = self.get_data(self.url, data_watch)
         if not res or res.status_code != 200:
             print('Error occured, no json')
-            return
+            return True
 
         try:
             content = res.json()
         except Exception as e:
             print(e)
             print('Error occured, no json')
-            return
+            return True
+
+        if "watch" not in content:
+            print('Busy servers, try again later')
+            return False
 
         num = list(content['watch'].keys())[0]
         video_url = f'https://{content["url"]}/w/episode/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
@@ -129,6 +140,8 @@ class SdarotPy:
         else:
             print('Video download failed')
 
+        return True
+
     # donwload series with specified range
     def download_series(self):
 
@@ -139,4 +152,5 @@ class SdarotPy:
                 print(f'\n  ------Episode {self.episode}------\n')
 
                 # download episode to appropriate season inside
-                self.download_episode()
+                if not self.download_episode():
+                    break
