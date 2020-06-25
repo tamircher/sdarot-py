@@ -10,6 +10,8 @@ def url(sid): return f'https://sdarot.today/watch/{sid}'
 
 def get_last_serie(arr, bot, top):
 
+    is_exists = None
+
     while bot < top:
 
         mid = (bot + top) // 2
