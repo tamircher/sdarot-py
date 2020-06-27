@@ -39,8 +39,12 @@ class SdarotPy:
         ### get seire name ###
         res = requests.get(self.prepare_webpage_url())
         tree = html.fromstring(res.content)
-        return tree.xpath(
+        serie_name = tree.xpath(
             '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
+
+        # remove invalid chars in folder name
+        serie_name = serie_name.translate({ord(i): None for i in '/\:*?"<>|'})
+        return serie_name
 
     def get_data(self, url, data={}):
 
@@ -92,12 +96,6 @@ class SdarotPy:
         print(f'Status: {res.status_code}')
         if res.status_code == 301:
             return False
-
-        ### get seire name ###
-        res = requests.get(temp_url)
-        tree = html.fromstring(res.content)
-        serie_name = tree.xpath(
-            '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
 
         ### pre watch ###
 
