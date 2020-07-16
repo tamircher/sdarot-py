@@ -150,7 +150,7 @@ class SdarotPy:
             return False
 
         num = list(content['watch'].keys())[0]
-        video_url = f'https://{content["url"]}/w/episode/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
+        video_url = f'https://{content["url"]}/w/episode/{self.sid}/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
         print(f'Video URL: {video_url}')
 
         ret = self.get_video(video_url)
