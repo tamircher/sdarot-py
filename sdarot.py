@@ -37,7 +37,7 @@ class SdarotPy:
     def init_serie_name(self):
 
         ### get seire name ###
-        res = requests.get(self.prepare_webpage_url())
+        res = requests.get(f'http://sdarot.today/watch/{self.sid}')
         tree = html.fromstring(res.content)
         serie_name = tree.xpath(
             '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
