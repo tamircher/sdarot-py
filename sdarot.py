@@ -39,8 +39,8 @@ class SdarotPy:
         ### get seire name ###
         res = requests.get(f'http://sdarot.today/watch/{self.sid}')
         tree = html.fromstring(res.content)
-        serie_name = tree.xpath(
-            '//div[@class="poster"]//h1/strong/text()')[0].replace(' / ', '-')
+        serie_name = ''.join(tree.xpath(
+            '//div[@class="poster"]//h1//text()')).replace(' / ', '-')
 
         # remove invalid chars in folder name
         serie_name = serie_name.translate({ord(i): None for i in '/\:*?"<>|'})
