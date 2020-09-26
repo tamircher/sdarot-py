@@ -149,8 +149,8 @@ class SdarotPy:
             print('Busy servers, try again later')
             return False
 
-        num = list(content['watch'].keys())[0]
-        video_url = f'https://{content["url"]}/w/episode/{self.sid}/{num}/{content["VID"]}.mp4?token={content["watch"][num]}&time={content["time"]}'
+        num = list(content["watch"].keys())[0]
+        video_url = f'https:{content["watch"][num]}'
         print(f'Video URL: {video_url}')
 
         ret = self.get_video(video_url)
