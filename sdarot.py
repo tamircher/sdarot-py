@@ -70,7 +70,7 @@ class SdarotPy:
                             f'Season-{self.season}')
         os.makedirs(episode_path, exist_ok=True)
         # get the file name
-        filename = f'Episode-{self.episode}.mp4'
+        filename = f'Episode-{self.episode:02d}.mp4'
 
         # read 1024 bytes every time
         buffer_size = 1024
