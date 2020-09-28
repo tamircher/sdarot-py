@@ -16,12 +16,24 @@ Rick and Morty - 1774
 Party Tricks - 1794
 Patrick Melrose - 3968
 ```
-Use "sid" code to download serie (not specifing episodes downloads the whole season)
+Use "sid" code to download series (not specifing episodes downloads the whole season)
 ```
 (venv) python main.py --sid=1774 -s=1-3
 ```
 
-Output will be in the "output" folder in the project root
+Use "out" to define output folder
+```
+(venv) python main.py --sid=1774 -s=1-3 -out="/Volume/SomeDisk/SomeFolder"
+```
+
+Default Output is set in the configuration.py and will be set to an "output" folder in the project root
+
+Use "gs" code to download multiple series with all seasons and episodes using series selection menu based on your search term
+use space to select the series and enter to start the download
+```
+(venv) python main.py -gs "west"
+```
+
 
 ## Run
 Download
@@ -41,8 +53,15 @@ Search
 ```
 or
 ```
-(venv) python searchSerie.py [SEARCH_TERM]
+(venv) python searchSeries.py [SEARCH_TERM]
 ```
 ```
-(venv) python searchSerie.py game of thrones
+(venv) python searchSeries.py game of thrones
+```
+Guided search and multiple series download 
+```
+(venv) python main.py -gs "[SEARCH_TERM]"
+```
+```
+(venv) python main.py -gs "west"
 ```

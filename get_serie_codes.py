@@ -5,13 +5,13 @@ import requests
 from configuration import Configuration
 
 sids = [''.join(sid) for sid in product('0123456789', repeat=4)]
-serie_exists = []
+series_exists = []
 
 
 def url(sid): return f'{Configuration.SDAROT_MAIN_URL}/watch/{sid}'
 
 
-def get_last_serie(arr, bot, top):
+def get_last_series(arr, bot, top):
 
     while bot < top:
 
@@ -34,4 +34,4 @@ def get_last_serie(arr, bot, top):
     return sid
 
 
-get_last_serie(sids, 0, len(sids))
+get_last_series(sids, 0, len(sids))
