@@ -5,6 +5,7 @@ from colorama import init, Fore, Style
 from sdarot import SdarotPy
 from searchSerie import search
 from utils import center
+from configuration import Configuration
 
 init(autoreset=True)
 
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--seasons', type=str, default='1')
     parser.add_argument('-e', '--episodes', type=str)
     parser.add_argument('--search', type=str)
-    parser.add_argument('--out', type=str, default='output')
+    parser.add_argument('--out', type=str, default=f'{Configuration.OUTPUT_PATH}')
 
     args = parser.parse_args()
 

@@ -104,6 +104,7 @@ class SdarotPy:
             unit="B",
             unit_scale=True,
             unit_divisor=1024,
+            leave=False
         )
 
         with open(join(episode_path, filename), "wb") as f:
@@ -151,7 +152,8 @@ class SdarotPy:
         print(Fore.CYAN)
         for _ in tqdm(
                 iterable=range(30),
-                desc=Fore.BLUE + Style.BRIGHT + "Waiting"
+                desc=Fore.BLUE + Style.BRIGHT + "Waiting",
+                leave=False
         ):
             time.sleep(1)
 
