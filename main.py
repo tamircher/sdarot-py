@@ -15,22 +15,29 @@ MAX_SEASONS_NUM = 20
 MAX_EPISODES_NUM = 50
 
 if __name__ == "__main__":
-    print("\n\n")
+    print("\n\n", end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center(",d88~~\       888                             d8        888~-_           "))
+        Fore.GREEN + Style.BRIGHT + center(",d88~~\       888                             d8        888~-_           "),
+        end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center("8888     e88~\888   /~~~8e  888-~\  e88~-_  _d88__      888   \  Y88b  / "))
+        Fore.GREEN + Style.BRIGHT + center("8888     e88~\888   /~~~8e  888-~\  e88~-_  _d88__      888   \  Y88b  / "),
+        end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center("`Y88b   d888  888       88b 888    d888   i  888   ____ 888    |  Y888/  "))
+        Fore.GREEN + Style.BRIGHT + center("`Y88b   d888  888       88b 888    d888   i  888   ____ 888    |  Y888/  "),
+        end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center(" `Y88b, 8888  888  e88~-888 888    8888   |  888        888   /    Y8/   "))
+        Fore.GREEN + Style.BRIGHT + center(" `Y88b, 8888  888  e88~-888 888    8888   |  888        888   /    Y8/   "),
+        end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center("   8888 Y888  888 C888  888 888    Y888   '  888        888_-~      Y    "))
+        Fore.GREEN + Style.BRIGHT + center("   8888 Y888  888 C888  888 888    Y888   '  888        888_-~      Y    "),
+        end='')
     print(Fore.GREEN + Style.BRIGHT + center(
-        "\__88P'  \"88_/888  \"88_-888 888     \"88_-~   \"88_/      888        /     "))
+        "\__88P'  \"88_/888  \"88_-888 888     \"88_-~   \"88_/      888        /     "),
+        end='')
     print(
-        Fore.GREEN + Style.BRIGHT + center("                                                                 _/      "))
-    print("\n")
+        Fore.GREEN + Style.BRIGHT + center("                                                                 _/      "),
+        end='')
+    print("\n", end='')
 
     parser = argparse.ArgumentParser()
 
