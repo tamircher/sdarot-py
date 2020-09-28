@@ -1,6 +1,9 @@
+import sys
+
 import requests
 from lxml import html
-import sys
+
+from configuration import Configuration
 
 title_single_res_path = "//div[@class='poster']//h1/strong/text()"
 element_xpath = "//div[contains(@class,'sInfo')]"
@@ -8,18 +11,18 @@ english_title_xpath = "./div/h5"
 code_xpath = "./a"
 
 
-def search(term):
+def search(search_term):
 
-    print(f'Searching for: {term}')
-    ### search term ###
-    res = requests.get(f'https://sdarot.today/search?term={term}')
+    print(f'Searching for: {search_term}')
+    # search term
+    res = requests.get(f'{Configuration.SDAROT_MAIN_URL}/search?term={search_term}')
     tree = html.fromstring(res.content)
 
-    res_url = res.url
-    if res_url.find('/watch/') != -1:
+    response_url = res.url
+    if response_url.find('/watch/') != -1:
 
         title = tree.xpath(title_single_res_path)[0].split(' / ')[1]
-        serie_code = res_url.split('/watch/', 1)[1].split('-', 1)[0]
+        serie_code = response_url.split('/watch/', 1)[1].split('-', 1)[0]
 
         print(f'{title} - {serie_code}\n')
 
@@ -34,8 +37,7 @@ def search(term):
             title = element.xpath(english_title_xpath)[0].text
 
             # get serie code from img src url
-            serie_code = element.xpath(code_xpath)[0].get(
-                'href').rsplit('/', 1)[1].split('-', 1)[0]
+            serie_code = element.xpath(code_xpath)[0].get('href').rsplit('/', 1)[1].split('-', 1)[0]
 
             print(f'{title} - {serie_code}')
 
