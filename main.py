@@ -53,6 +53,12 @@ if __name__ == "__main__":
     if args.guidedSearch:
         selection = guided_search(args.guidedSearch)
         for index, element in enumerate(selection):
+            if int(element[0]['code']) == -1:
+                print('You selected to exit without downloading Series')
+                print('Download aborted')
+                sys.exit()
+
+        for index, element in enumerate(selection):
             args.sid = int(element[0]['code'])
             season_range = range(1, MAX_SEASONS_NUM)
             episode_range = range(1, MAX_EPISODES_NUM)
