@@ -97,13 +97,13 @@ class SdarotPy:
 
         # get video with stream
         res = self.s.get(video_url, stream=True)
-        if not res or res.status_code not in (200, 206, 416):
-            if res.status_code == 416:
-                print('Episode already downloaded - skipping download')
-                return True
-
+        if not res and res.status_code not in (200, 206, 416):
             print(Fore.RED + f'Error occurred, no video. ( HTTP ERROR: {res.status_code} )')
             return False
+
+        if res.status_code == 416:
+            print('Episode already downloaded - skipping download')
+            return True
 
         # get the total file size
         file_size_online = int(res.headers.get("Content-Range").split('/')[1])
