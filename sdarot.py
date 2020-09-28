@@ -21,9 +21,9 @@ class SdarotPy:
 
         # get series name from the webpage
         series_info = self.get_series_info()
-        self.series_name = series_info['name'];
+        self.series_name = series_info['name']
         if season_range is None:
-            season_range = range(1, int(series_info['seasons']) + 1)
+            season_range = range(0, int(series_info['seasons']) + 1)
 
         if episode_range is None:
             episode_range = [1]
@@ -35,7 +35,6 @@ class SdarotPy:
 
         self.season_range = season_range
         self.episode_range = episode_range
-
 
         self.url = f'{Configuration.SDAROT_MAIN_URL}/ajax/watch'
 
