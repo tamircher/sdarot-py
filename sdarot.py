@@ -31,8 +31,8 @@ class SdarotPy:
         self.season_range = season_range
         self.episode_range = episode_range
 
-        # get serie name from the webpage
-        self.serie_name = self.init_serie_name()
+        # get series name from the webpage
+        self.series_name = self.init_series_name()
 
         self.url = f'{Configuration.SDAROT_MAIN_URL}/ajax/watch'
 
@@ -48,20 +48,20 @@ class SdarotPy:
     def prepare_webpage_url(self):
         return f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
 
-    def init_serie_name(self):
+    def init_series_name(self):
 
         # get seire name
         res = requests.get(f'{Configuration.SDAROT_MAIN_URL2}/watch/{self.sid}')
         tree = html.fromstring(res.content)
-        serie_name = ''.join(
+        series_name = ''.join(
             tree.xpath(
                 '//div[@class="poster"]//h1//text()'
             )
         ).replace(' / ', '-')
 
         # remove invalid chars in folder name
-        serie_name = serie_name.translate({ord(i): None for i in '/\\:*?"<>|'})
-        return serie_name
+        series_name = series_name.translate({ord(i): None for i in '/\\:*?"<>|'})
+        return series_name
 
     def get_data(self, url, data=None):
 
@@ -79,7 +79,7 @@ class SdarotPy:
 
         # create directory for episode
         episode_path = join(self.output_path,
-                            f'{self.serie_name}',
+                            f'{self.series_name}',
                             f'Season-{self.season:02d}')
         os.makedirs(episode_path, exist_ok=True)
 
@@ -97,13 +97,13 @@ class SdarotPy:
 
         # get video with stream
         res = self.s.get(video_url, stream=True)
-        if not res or res.status_code not in (200, 206, 416):
-            if res.status_code == 416:
-                print('Episode already downloaded - skipping download')
-                return True
-
+        if not res and res.status_code not in (200, 206, 416):
             print(Fore.RED + f'Error occurred, no video. ( HTTP ERROR: {res.status_code} )')
             return False
+
+        if res.status_code == 416:
+            print('Episode already downloaded - skipping download')
+            return True
 
         # get the total file size
         file_size_online = int(res.headers.get("Content-Range").split('/')[1])
@@ -137,9 +137,7 @@ class SdarotPy:
         print('Video downloaded successfully')
         return True
 
-
     def download_episode(self):
-
         # check if ep exsits
         temp_url = f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
         res = requests.head(temp_url)
@@ -220,7 +218,7 @@ class SdarotPy:
     # download series with specified range
     def download_series(self):
 
-        print(Fore.YELLOW + Style.BRIGHT + center(f'--==-- Serie: {get_display(self.serie_name)} --==--'))
+        print(Fore.YELLOW + Style.BRIGHT + center(f'--==-- Series: {get_display(self.series_name)} --==--'))
         for self.season in self.season_range:
             print(Fore.GREEN + center(f'- - - - - [ Season: {self.season:02d} ] - - - - -'))
 
