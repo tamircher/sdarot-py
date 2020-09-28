@@ -80,25 +80,23 @@ if __name__ == "__main__":
         search(args.search)
     else:
 
+        if args.sid is None:
+            print(Fore.RED + 'Missing --sid parameter')
+            sys.exit()
+
+        season_range = None
         if args.seasons is not None:
 
             season_split = args.seasons.split('-')
             season_range = range(int(season_split[0]), int(season_split[-1]) + 1)
-        else:
-            season_range = range(1, MAX_SEASONS_NUM)
 
-        episode_range = []
+        episode_range = range(1, MAX_EPISODES_NUM)
         if args.episodes is not None:
 
             episode_split = args.episodes.split('-')
             episode_range = range(
                 int(episode_split[0]), int(episode_split[-1]) + 1)
-        else:
-            episode_range = range(1, MAX_EPISODES_NUM)
 
-        print(center(
-            Fore.YELLOW +
-            f'----====[ Fetching: Seasons {season_range[0]}-{season_range[-1]}, Episodes {episode_range[0]}-{episode_range[-1]} ]====----'))
         sdarot = SdarotPy(
             sid=args.sid,
             season_range=season_range,

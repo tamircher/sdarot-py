@@ -23,10 +23,14 @@ class SdarotPy:
         series_info = self.get_series_info()
         self.series_name = series_info['name']
         if season_range is None:
-            season_range = range(0, int(series_info['seasons']) + 1)
+            season_range = series_info['seasons']
 
         if episode_range is None:
             episode_range = [1]
+
+        print(center(
+            Fore.YELLOW +
+            f'----====[ Fetching: Seasons {season_range[0]}-{season_range[-1]}, Episodes {episode_range[0]}-{episode_range[-1]} ]====----'))
 
         self.season = 1
         self.episode = 1
@@ -64,11 +68,12 @@ class SdarotPy:
         # remove invalid chars in folder name
         series_name = series_name.translate({ord(i): None for i in '/\\:*?"<>|'})
 
-        num_seasons = len(tree.xpath('//ul[@id="season"]//li["data-season"]'))
+        season_numbers = tree.xpath('//ul[@id="season"]//li["data-season"]')
+        season_numbers = list(map(lambda el: int(el.attrib.get('data-season')), season_numbers))
 
         return {
             'name': series_name,
-            'seasons': num_seasons,
+            'seasons': season_numbers,
         }
 
     def get_data(self, url, data=None):
@@ -145,14 +150,19 @@ class SdarotPy:
         print('Video downloaded successfully')
         return True
 
-    def download_episode(self):
-        # check if ep exsits
-        temp_url = f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
-        res = requests.head(temp_url)
+    def is_page_exists(self, url):
+        res = requests.head(url)
         if Configuration.DEBUG:
             print(f'Status: {res.status_code}')
         if res.status_code == 301:
             return False
+        return True
+
+    def download_episode(self):
+        # check if ep exsits
+        temp_url = f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
+        if not self.is_page_exists(temp_url):
+            return 1
 
         # pre watch
         data_pre_watch = {
@@ -167,7 +177,7 @@ class SdarotPy:
         res = self.get_data(self.url, data_pre_watch)
         if not res or res.status_code != 200:
             print(Fore.RED + 'Error occurred, no token')
-            return True
+            return 0
 
         token = res.content.decode("utf-8")
         if Configuration.DEBUG:
@@ -199,18 +209,18 @@ class SdarotPy:
         res = self.get_data(self.url, data_watch)
         if not res or res.status_code != 200:
             print(Fore.RED + 'Error occurred, no json')
-            return True
+            return 0
 
         try:
             content = res.json()
         except Exception as e:
             print(e)
             print(Fore.RED + 'Error occurred, no json')
-            return True
+            return 0
 
         if "watch" not in content:
             print(Fore.RED + 'Busy servers, try again later')
-            return False
+            return 2
 
         num = list(content["watch"].keys())[0]
         video_url = f'https:{content["watch"][num]}'
@@ -221,18 +231,28 @@ class SdarotPy:
         if not ret:
             print(Fore.RED + 'Video download failed')
 
-        return True
+        return 0
 
     # download series with specified range
     def download_series(self):
 
         print(Fore.YELLOW + Style.BRIGHT + center(f'--==-- Series: {get_display(self.series_name)} --==--'))
         for self.season in self.season_range:
+
+            # check if season exists
+            season_url = f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/1'
+            if not self.is_page_exists(season_url):
+                continue
+
             print(Fore.GREEN + center(f'- - - - - [ Season: {self.season:02d} ] - - - - -'))
 
             for self.episode in self.episode_range:
                 print(Fore.GREEN + Style.BRIGHT + center(f'---==={{ Episode: {self.episode:02d} }}===---'))
 
                 # download episode to appropriate season inside
-                if not self.download_episode():
+                # ret: 0 - continue in this season, 1 - continue to next season, 2 - exit
+                ret = self.download_episode()
+                if ret == 1:  # reached end of season
                     break
+                elif ret == 2:  # busy servers or other errors
+                    return
