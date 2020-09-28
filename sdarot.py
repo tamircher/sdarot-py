@@ -243,7 +243,7 @@ class SdarotPy:
                             episode_download_retry_counter = episode_download_retry_counter + 1
                             print(
                                 f'Retrying to download episode {episode_download_retry_counter} / {Configuration.MAX_RETRY_ON_BUSY}')
-                            busy_wait_time = random.randint(15, 120)
+                            busy_wait_time = random.randint(Configuration.MIN_RETRY_TIME, Configuration.MAX_RETRY_ON_BUSY)
                             # 30 seconds loading
                             print(f'Waiting {busy_wait_time} seconds before trying again to download...')
                             print(Fore.CYAN)
