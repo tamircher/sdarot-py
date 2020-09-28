@@ -6,3 +6,23 @@ debug.log
 main.py
 output/
 __pycache__/
+
+# OS
+.DS_Store
+
+# IDEs and editors
+/.idea
+/.vscode
+.project
+.classpath
+.c9/
+.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
