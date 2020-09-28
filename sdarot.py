@@ -1,7 +1,7 @@
 import os
 import time
 from os.path import join
-
+import random
 import requests
 from bidi.algorithm import get_display
 from colorama import init, Fore, Style
@@ -9,7 +9,7 @@ from lxml import html
 from tqdm import tqdm
 
 from configuration import Configuration
-from utils import center
+from utils import center, ErrorCodes
 
 init(autoreset=True)
 
@@ -107,11 +107,11 @@ class SdarotPy:
         res = self.s.get(video_url, stream=True)
         if not res and res.status_code not in (200, 206, 416):
             print(Fore.RED + f'Error occurred, no video. ( HTTP ERROR: {res.status_code} )')
-            return False
+            return {'isOk': False, 'errors': ErrorCodes.UNKNOWN_ERROR}
 
         if res.status_code == 416:
             print('Episode already downloaded - skipping download')
-            return True
+            return {'isOk': True, 'errors': None}
 
         # get the total file size
         file_size_online = int(res.headers.get("Content-Range").split('/')[1])
@@ -143,16 +143,16 @@ class SdarotPy:
         progress.close()
 
         print('Video downloaded successfully')
-        return True
+        return {'isOk': True, 'errors': None}
 
     def download_episode(self):
-        # check if ep exsits
+        # check if ep exists
         temp_url = f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
         res = requests.head(temp_url)
         if Configuration.DEBUG:
             print(f'Status: {res.status_code}')
         if res.status_code == 301:
-            return False
+            return {'isOk': False, 'errors': ErrorCodes.HTTP_ERROR_301}
 
         # pre watch
         data_pre_watch = {
@@ -167,7 +167,7 @@ class SdarotPy:
         res = self.get_data(self.url, data_pre_watch)
         if not res or res.status_code != 200:
             print(Fore.RED + 'Error occurred, no token')
-            return True
+            return {'isOk': False, 'errors': ErrorCodes.NO_TOKEN}
 
         token = res.content.decode("utf-8")
         if Configuration.DEBUG:
@@ -199,18 +199,18 @@ class SdarotPy:
         res = self.get_data(self.url, data_watch)
         if not res or res.status_code != 200:
             print(Fore.RED + 'Error occurred, no json')
-            return True
+            return {'isOk': False, 'errors': ErrorCodes.NO_JSON}
 
         try:
             content = res.json()
         except Exception as e:
             print(e)
             print(Fore.RED + 'Error occurred, no json')
-            return True
+            return {'isOk': False, 'errors': ErrorCodes.NO_TOKEN}
 
         if "watch" not in content:
             print(Fore.RED + 'Busy servers, try again later')
-            return False
+            return {'isOk': False, 'errors': ErrorCodes.SERVER_BUSY}
 
         num = list(content["watch"].keys())[0]
         video_url = f'https:{content["watch"][num]}'
@@ -218,10 +218,10 @@ class SdarotPy:
             print(f'Video URL: {video_url}')
 
         ret = self.get_video(video_url)
-        if not ret:
+        if not ret['isOk']:
             print(Fore.RED + 'Video download failed')
 
-        return True
+        return {'isOk': True, 'errors': None}
 
     # download series with specified range
     def download_series(self):
@@ -232,7 +232,26 @@ class SdarotPy:
 
             for self.episode in self.episode_range:
                 print(Fore.GREEN + Style.BRIGHT + center(f'---==={{ Episode: {self.episode:02d} }}===---'))
-
-                # download episode to appropriate season inside
-                if not self.download_episode():
-                    break
+                episode_download_retry_counter = 0
+                while True:
+                    # download episode to appropriate season inside
+                    download_result = self.download_episode()
+                    if download_result['isOk'] or episode_download_retry_counter >= Configuration.MAX_RETRY_ON_BUSY:
+                        break
+                    else:
+                        if download_result['errors'] == ErrorCodes.SERVER_BUSY:
+                            episode_download_retry_counter = episode_download_retry_counter + 1
+                            print(
+                                f'Retrying to download episode {episode_download_retry_counter} / {Configuration.MAX_RETRY_ON_BUSY}')
+                            busy_wait_time = random.randint(15, 120)
+                            # 30 seconds loading
+                            print(f'Waiting {busy_wait_time} seconds before trying again to download...')
+                            print(Fore.CYAN)
+                            for _ in tqdm(
+                                    iterable=range(busy_wait_time),
+                                    desc=Fore.BLUE + Style.BRIGHT + "Waiting",
+                                    leave=False
+                            ):
+                                time.sleep(1)
+                        else:
+                            break

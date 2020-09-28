@@ -4,3 +4,5 @@ class Configuration:
 
     SDAROT_MAIN_URL = 'https://sdarot.today'
     SDAROT_MAIN_URL2 = 'http://sdarot.today'
+
+    MAX_RETRY_ON_BUSY = 4
