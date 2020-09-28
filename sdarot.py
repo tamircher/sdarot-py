@@ -17,12 +17,17 @@ init(autoreset=True)
 class SdarotPy:
     def __init__(self, sid, season_range=None, episode_range=None, output_path=Configuration.OUTPUT_PATH):
 
+        self.sid = sid
+
+        # get series name from the webpage
+        series_info = self.get_series_info()
+        self.series_name = series_info['name'];
         if season_range is None:
-            season_range = [1]
+            season_range = range(1, int(series_info['seasons']) + 1)
+
         if episode_range is None:
             episode_range = [1]
 
-        self.sid = sid
         self.season = 1
         self.episode = 1
 
@@ -31,8 +36,6 @@ class SdarotPy:
         self.season_range = season_range
         self.episode_range = episode_range
 
-        # get series name from the webpage
-        self.series_name = self.init_series_name()
 
         self.url = f'{Configuration.SDAROT_MAIN_URL}/ajax/watch'
 
@@ -48,20 +51,26 @@ class SdarotPy:
     def prepare_webpage_url(self):
         return f'{Configuration.SDAROT_MAIN_URL}/watch/{self.sid}/season/{self.season}/episode/{self.episode}'
 
-    def init_series_name(self):
+    def get_series_info(self):
 
-        # get seire name
+        # get series name
         res = requests.get(f'{Configuration.SDAROT_MAIN_URL2}/watch/{self.sid}')
         tree = html.fromstring(res.content)
         series_name = ''.join(
             tree.xpath(
                 '//div[@class="poster"]//h1//text()'
             )
-        ).replace(' / ', '-')
+        ).replace(' / ', ' - ')
 
         # remove invalid chars in folder name
         series_name = series_name.translate({ord(i): None for i in '/\\:*?"<>|'})
-        return series_name
+
+        num_seasons = len(tree.xpath('//ul[@id="season"]//li["data-season"]'))
+
+        return {
+            'name': series_name,
+            'seasons': num_seasons,
+        }
 
     def get_data(self, url, data=None):
 

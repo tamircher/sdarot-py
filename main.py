@@ -62,8 +62,8 @@ if __name__ == "__main__":
                 f'----====[ Fetching: Seasons {season_range[0]}-{season_range[-1]}, Episodes {episode_range[0]}-{episode_range[-1]} ]====----'))
             sdarot = SdarotPy(
                 sid=args.sid,
-                season_range=season_range,
-                episode_range=episode_range,
+                # season_range=season_range,
+                # episode_range=episode_range,
                 output_path=args.output,
             )
 
