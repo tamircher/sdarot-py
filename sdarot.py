@@ -74,40 +74,58 @@ class SdarotPy:
         return None
 
     def get_video(self, video_url):
+        download_exist = False
+        file_size_offline = 0
+
+        # create directory for episode
+        episode_path = join(self.output_path,
+                            f'{self.serie_name}',
+                            f'Season-{self.season:02d}')
+        os.makedirs(episode_path, exist_ok=True)
+
+        # get the file name
+        filename = f'Episode-{self.episode:02d}.mp4'
+        offline_filename = join(episode_path, filename)
+
+        # if file exists set Range header to start stream from the file size
+        if os.path.isfile(offline_filename):
+            download_exist = True
+            file_size_offline = os.stat(offline_filename).st_size
+            print(f'Found existing episode: {filename}.')
+
+        self.s.headers.update({'Range': f'bytes={file_size_offline}-'})
 
         # get video with stream
         res = self.s.get(video_url, stream=True)
-        if not res or res.status_code != 200:
-            print(Fore.RED + 'Error occurred, no video')
+        if not res or res.status_code not in (200, 206, 416):
+            if res.status_code == 416:
+                print('Episode already downloaded - skipping download')
+                return True
+
+            print(Fore.RED + f'Error occurred, no video. ( HTTP ERROR: {res.status_code} )')
             return False
 
         # get the total file size
-        file_size = int(res.headers.get("Content-Length", 0))
+        file_size_online = int(res.headers.get("Content-Range").split('/')[1])
 
-        # create directory for episode
-        episode_path = join(
-            self.output_path,
-            f'{self.serie_name}',
-            f'Season-{self.season}'
-        )
-        os.makedirs(episode_path, exist_ok=True)
-        # get the file name
-        filename = f'Episode-{self.episode}.mp4'
+        print('Downloading....' if not download_exist else 'Resuming download....')
 
-        # read 1024 bytes every time
+        # Set configuration
         buffer_size = 1024
+        mode = 'ab' if download_exist else 'wb'
+
         # progress bar, changing the unit to bytes instead of iteration (default by tqdm)
         progress = tqdm(
             iterable=res.iter_content(buffer_size),
             desc=Fore.CYAN + f"Downloading {filename}",
-            total=file_size,
+            total=file_size_online,
             unit="B",
             unit_scale=True,
             unit_divisor=1024,
+            initial=file_size_offline,
             leave=False
         )
-
-        with open(join(episode_path, filename), "wb") as f:
+        with open(offline_filename, mode) as f:
             for data in progress:
                 # write data read to the file
                 f.write(data)
@@ -116,7 +134,9 @@ class SdarotPy:
                     progress.update(len(data))
         progress.close()
 
+        print('Video downloaded successfully')
         return True
+
 
     def download_episode(self):
 
@@ -129,7 +149,7 @@ class SdarotPy:
             return False
 
         # pre watch
-        data_prewatch = {
+        data_pre_watch = {
             'preWatch': 'true',
             'SID': self.sid,
             'season': self.season,
@@ -138,7 +158,7 @@ class SdarotPy:
 
         if Configuration.DEBUG:
             print('Getting Token...')
-        res = self.get_data(self.url, data_prewatch)
+        res = self.get_data(self.url, data_pre_watch)
         if not res or res.status_code != 200:
             print(Fore.RED + 'Error occurred, no token')
             return True
@@ -148,7 +168,7 @@ class SdarotPy:
             print(f'Token: {token}')
 
         # 30 seconds loading
-        print('Sleep 30 seconds for loading...')
+        print('Waiting 30 seconds before download...')
         print(Fore.CYAN)
         for _ in tqdm(
                 iterable=range(30),
@@ -192,9 +212,7 @@ class SdarotPy:
             print(f'Video URL: {video_url}')
 
         ret = self.get_video(video_url)
-        if ret:
-            print('Video downloaded successfully')
-        else:
+        if not ret:
             print(Fore.RED + 'Video download failed')
 
         return True
