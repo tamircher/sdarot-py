@@ -1,16 +1,17 @@
-import requests
 from itertools import product
+
+import requests
+
+from configuration import Configuration
 
 sids = [''.join(sid) for sid in product('0123456789', repeat=4)]
 serie_exists = []
 
 
-def url(sid): return f'https://sdarot.today/watch/{sid}'
+def url(sid): return f'{Configuration.SDAROT_MAIN_URL}/watch/{sid}'
 
 
 def get_last_serie(arr, bot, top):
-
-    is_exists = None
 
     while bot < top:
 
