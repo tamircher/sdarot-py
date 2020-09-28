@@ -44,7 +44,7 @@ def guided_search(search_term):
         year = tree.xpath(single_year_xpath)[0]
         genre = tree.xpath(single_genre_xpath)[0].rsplit(':', 1)[1]
         # get series code from img src url
-        series_code = serie_code = response_url.split('/watch/', 1)[1].split('-', 1)[0]
+        series_code = response_url.split('/watch/', 1)[1].split('-', 1)[0]
         series_list.append({
             'eng_title': eng_title,
             'heb_title': heb_title,
