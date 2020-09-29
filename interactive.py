@@ -25,7 +25,7 @@ multi_genre_xpath = "./div/p[2]/strong/following-sibling::text()"
 code_xpath = "./a"
 
 
-def guided_search(search_term):
+def interactive(search_term):
     print(Fore.YELLOW + f'Searching for: {Fore.YELLOW + Style.BRIGHT + search_term}\n')
     # search term
     res = requests.get(f'{Configuration.SDAROT_MAIN_URL}/search?term={search_term}')
@@ -95,4 +95,4 @@ def guided_search(search_term):
 
 if __name__ == "__main__":
     term = ' '.join(sys.argv[1:])
-    guided_search(term)
+    interactive(term)

@@ -28,7 +28,7 @@ Use "out" to define output folder
 
 Default Output is set in the configuration.py and will be set to an "output" folder in the project root
 
-Use "gs" code to download multiple series with all seasons and episodes using series selection menu based on your search term
+Use "-i" code to bring interactive wizard to download multiple series with all seasons and episodes using series selection menu based on your search term
 use space to select the series and enter to start the download
 ```
 (venv) python main.py -gs "west"
@@ -58,7 +58,7 @@ or
 ```
 (venv) python searchSeries.py game of thrones
 ```
-Guided search and multiple series download 
+Interactive multiple series download 
 ```
 (venv) python main.py -gs "[SEARCH_TERM]"
 ```
