@@ -33,12 +33,6 @@ def guided_search(search_term):
     series_list = []
     response_url = res.url
     if response_url.find('/watch/') != -1:
-
-        # title: object = tree.xpath(title_single_res_path)[0].split(' / ')[1]
-        # series_code = response_url.split('/watch/', 1)[1].split('-', 1)[0]
-        #
-        # series_list.append({'label': title, 'code': series_code})
-
         eng_title = tree.xpath(single_english_title_xpath)[0]
         heb_title = tree.xpath(single_hebrew_title_xpath)[0].rsplit('/', 1)[0]
         year = tree.xpath(single_year_xpath)[0]
@@ -52,7 +46,6 @@ def guided_search(search_term):
             'genre': genre,
             'code': series_code
         })
-
 
     else:
 
