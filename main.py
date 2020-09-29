@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--seasons', type=str, help='the season number. example -s=1 -s=1-3')
     parser.add_argument('-e', '--episodes', type=str, help='the season number. episodes -s=1 -s=1-3')
     parser.add_argument('--search', type=str)
-    parser.add_argument('-i', '--interactive', type=str, help='search and download multiple series')
+    parser.add_argument('-i', '--interactive', type=str, help='interactive wizard for search and download multiple series')
     parser.add_argument('-out', '--output', type=str, default=f'{Configuration.OUTPUT_PATH}',
                         help='override the default output path.')
 
