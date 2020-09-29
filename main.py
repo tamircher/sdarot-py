@@ -67,7 +67,7 @@ if __name__ == "__main__":
             sdarot = SdarotPy(
                 sid=args.sid,
                 # season_range=season_range,
-                # episode_range=episode_range,
+                episode_range=episode_range,
                 output_path=args.output,
             )
 
