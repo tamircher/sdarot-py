@@ -2,7 +2,7 @@ import argparse
 from colorama import init, Fore, Style
 from sdarot import SdarotPy
 from searchSeries import search
-from guidedSearchSeries import guided_search
+from interactive import interactive
 from utils import center
 from configuration import Configuration
 import sys
@@ -43,13 +43,13 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--seasons', type=str, help='the season number. example -s=1 -s=1-3')
     parser.add_argument('-e', '--episodes', type=str, help='the season number. episodes -s=1 -s=1-3')
     parser.add_argument('--search', type=str)
-    parser.add_argument('-gs', '--guidedSearch', type=str, help='search and download multiple series')
+    parser.add_argument('-i', '--interactive', type=str, help='interactive wizard for search and download multiple series')
     parser.add_argument('-out', '--output', type=str, default=f'{Configuration.OUTPUT_PATH}',
                         help='override the default output path.')
 
     args = parser.parse_args()
-    if args.guidedSearch:
-        selection = guided_search(args.guidedSearch)
+    if args.interactive:
+        selection = interactive(args.interactive)
         for index, element in enumerate(selection):
             if int(element[0]['code']) == -1:
                 print('You selected to exit without downloading Series')
