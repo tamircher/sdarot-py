@@ -1,7 +1,5 @@
 import argparse
-
 from colorama import init, Fore, Style
-
 from sdarot import SdarotPy
 from searchSeries import search
 from guidedSearchSeries import guided_search
@@ -56,7 +54,7 @@ if __name__ == "__main__":
             if int(element[0]['code']) == -1:
                 print('You selected to exit without downloading Series')
                 print('Download aborted')
-                sys.exit()
+                sys.exit(1)
 
         for index, element in enumerate(selection):
             args.sid = int(element[0]['code'])
@@ -74,15 +72,16 @@ if __name__ == "__main__":
             )
 
             sdarot.download_series()
-        sys.exit()
+        sys.exit(0)
 
     if args.search:
         search(args.search)
     else:
 
         if args.sid is None:
-            print(Fore.RED + 'Missing --sid parameter')
-            sys.exit()
+            print(Fore.RED + 'Missing --sid parameter\n')
+            parser.print_help(sys.stderr)
+            sys.exit(1)
 
         season_range = None
         if args.seasons is not None:
